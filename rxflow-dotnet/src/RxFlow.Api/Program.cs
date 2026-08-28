@@ -1,0 +1,31 @@
+using Confluent.Kafka;
+using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.EntityFrameworkCore;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using RxFlow.Api;
+using RxFlow.Application;
+using RxFlow.Domain;
+using RxFlow.Infrastructure;
+using RxFlow.Workers;
+using StackExchange.Redis;
+
+var builder = WebApplication.CreateBuilder(args);
+var postgres = builder.Configuration.GetConnectionString("postgres") ?? "Host=localhost;Database=rxflow;Username=rxflow;Password=rxflow";
+builder.Services.AddControllers();
+builder.Services.AddAuthentication("Bearer").AddScheme<AuthenticationSchemeOptions, TrainingTokenHandler>("Bearer", null);
+builder.Services.AddAuthorization(); builder.Services.AddDbContext<RxFlowDbContext>(o => o.UseNpgsql(postgres));
+builder.Services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("redis") ?? "localhost:6379"));
+builder.Services.AddHangfire(c => c.UsePostgreSqlStorage(o => o.UseNpgsqlConnection(postgres))); builder.Services.AddHangfireServer();
+builder.Services.AddHttpClient("inventory", c => c.BaseAddress = new Uri(builder.Configuration["Connectors:Inventory"] ?? "http://inventory.invalid"));
+builder.Services.AddHttpClient("lab", c => { c.BaseAddress = new Uri(builder.Configuration["Connectors:Lab"] ?? "http://lab.invalid"); c.Timeout = TimeSpan.FromSeconds(2); });
+builder.Services.AddHttpClient("shipping", c => { c.BaseAddress = new Uri(builder.Configuration["Connectors:Shipping"] ?? "http://shipping.invalid"); c.Timeout = TimeSpan.FromSeconds(3); });
+builder.Services.AddSingleton<IProducer<string, string>>(_ => new ProducerBuilder<string, string>(new ProducerConfig { BootstrapServers = builder.Configuration["Kafka:BootstrapServers"] ?? "localhost:9092" }).Build());
+builder.Services.AddScoped<IOrderRepository, OrderRepository>(); builder.Services.AddScoped<IInventoryConnector, InventoryConnector>(); builder.Services.AddScoped<ILabConnector, LabConnector>(); builder.Services.AddScoped<IEventPublisher, KafkaEventPublisher>(); builder.Services.AddScoped<ILabJobQueue, HangfireLabJobQueue>();
+builder.Services.AddScoped<OrderService>(); builder.Services.AddScoped<PrescriptionValidator>(); builder.Services.AddScoped<LegacyPriceEngine>(); builder.Services.AddScoped<LabRouter>(); builder.Services.AddScoped<InFlightCounter>();
+builder.Services.AddOpenTelemetry().ConfigureResource(r => r.AddService("RxFlow")).WithTracing(t => t.AddAspNetCoreInstrumentation().AddHttpClientInstrumentation().AddOtlpExporter());
+var app = builder.Build(); using (var scope = app.Services.CreateScope()) await scope.ServiceProvider.GetRequiredService<RxFlowDbContext>().Database.MigrateAsync();
+app.UseAuthentication(); app.UseAuthorization(); app.MapControllers(); app.Run();
+public partial class Program { }

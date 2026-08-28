@@ -1,0 +1,23 @@
+services:
+  postgres:
+    image: postgres:16.4-alpine
+    environment: {POSTGRES_DB: rxflow, POSTGRES_USER: rxflow, POSTGRES_PASSWORD: rxflow}
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U rxflow"], interval: 2s, timeout: 2s, retries: 30}
+  redis:
+    image: redis:7.4-alpine
+    healthcheck: {test: [CMD, redis-cli, ping], interval: 2s, timeout: 2s, retries: 30}
+  redpanda:
+    image: redpandadata/redpanda:v24.2.8
+    command: [redpanda, start, --overprovisioned, --smp, '1', --memory, 512M, --reserve-memory, 0M, --node-id, '0', --check=false, --kafka-addr, PLAINTEXT://0.0.0.0:9092, --advertise-kafka-addr, PLAINTEXT://redpanda:9092]
+  connector-stub:
+    image: python:3.12-alpine
+    command: [python, -m, http.server, '8081']
+  app:
+    build: .
+    ports: ["${RXFLOW_DOTNET_HTTP_PORT:-18081}:8080"]
+    environment: {ASPNETCORE_URLS: http://+:8080, ConnectionStrings__postgres: Host=postgres;Database=rxflow;Username=rxflow;Password=rxflow, ConnectionStrings__redis: redis:6379, Kafka__BootstrapServers: redpanda:9092, Connectors__Inventory: http://connector-stub:8081, Connectors__Lab: http://connector-stub:8081, Connectors__Shipping: http://connector-stub:8081}
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      redpanda: {condition: service_started}
+      connector-stub: {condition: service_started}
