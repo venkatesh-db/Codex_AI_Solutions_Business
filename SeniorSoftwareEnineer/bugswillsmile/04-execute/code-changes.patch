@@ -1,0 +1,20 @@
+--- a/src/CartSvc/CatalogService.cs
++++ b/src/CartSvc/CatalogService.cs
+@@
+-        command.CommandText = $"SELECT name FROM products WHERE name ILIKE '%{query}%' ORDER BY name";
++        command.CommandText = "SELECT name FROM products WHERE name ILIKE @query ORDER BY name";
++        command.Parameters.AddWithValue("query", $"%{query}%");
+
+--- a/tests/CartSvc.Tests/ServiceTests.cs
++++ b/tests/CartSvc.Tests/ServiceTests.cs
+@@
+-    [Fact] public void CatalogSearchIgnoresCase() => Assert.Equal(new[] { "Coffee" }, new CatalogService(db).Search("COF"));
++    [Fact]
++    public void CatalogSearchTreatsInputAsText()
++    {
++        var catalog = new CatalogService(db);
++
++        Assert.Equal(new[] { "Coffee" }, catalog.Search("COF"));
++        Assert.Empty(catalog.Search("' OR 1=1 --"));
++        Assert.Empty(catalog.Search("'"));
++    }

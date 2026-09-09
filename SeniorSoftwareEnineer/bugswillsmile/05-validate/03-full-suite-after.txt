@@ -1,0 +1,15 @@
+Command:
+CARTSVC_CONNECTION_STRING='Host=/tmp;Database=cartsvc_lab;Username=venkatesh' /tmp/cartsvc-dotnet-sdk/dotnet test --no-restore
+
+Exit code: 0
+
+Output:
+  CartSvc -> /Users/venkatesh/Documents/ChatGPT/codex_Internal_automotion/cartsvc-dotnet/src/CartSvc/bin/Debug/net8.0/CartSvc.dll
+  CartSvc.Tests -> /Users/venkatesh/Documents/ChatGPT/codex_Internal_automotion/cartsvc-dotnet/tests/CartSvc.Tests/bin/Debug/net8.0/CartSvc.Tests.dll
+Test run for /Users/venkatesh/Documents/ChatGPT/codex_Internal_automotion/cartsvc-dotnet/tests/CartSvc.Tests/bin/Debug/net8.0/CartSvc.Tests.dll (.NETCoreApp,Version=v8.0)
+VSTest version 17.11.1 (arm64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:    20, Skipped:     0, Total:    20, Duration: 272 ms - CartSvc.Tests.dll (net8.0)
