@@ -1,7 +1,8 @@
 # My Workday Reuse — Senior Software Engineer User Prompts
 
 Date created: 2026-09-09  
-Scope: User prompts from the point where the new-company Senior Software Developer role was introduced through the request to create this file.
+Last updated: 2026-09-09  
+Scope: User prompts from the point where the new-company Senior Software Developer role was introduced through the latest request to update this history.
 
 This is a **user-prompts-only** record. Assistant answers, private reasoning, system instructions, and tool output are excluded. Spelling and wording are preserved where practical so another conversation can follow the evolution of the user's requirements.
 
@@ -91,6 +92,51 @@ This is a **user-prompts-only** record. Assistant answers, private reasoning, sy
 
 > From the below prompt — all the “I work for new project and new company as role Senior Software Developer” work activities and all the conversation — I need the user prompts I asked. Please write them into a new Markdown file: `myworkdayreuse`.
 
+## Prompt 17 — Find defects in the project
+
+> Can you find defects in this project? List a few.
+
+## Prompt 18 — Challenge the incomplete defect count
+
+> I found 9. How come you found only 7?
+
+## Prompt 19 — Ask whether more bugs remain
+
+> Is any bug still pending?
+
+## Prompt 20 — Compare technical findings with 25 client issues
+
+> Total 13. Client says 25 issues. The client real scenario or domain issue—why don't you think?
+
+## Prompt 21 — Define four code-review aspects
+
+> I need to review my code in four aspects:
+>
+> 1. General review.
+> 2. Domain issues.
+> 3. Scenarios.
+> 4. Memory, crash, or threads.
+
+## Prompt 22 — Convert SQL injection into a Jira ticket
+
+> `[P0] SQL injection`: provide me the issue in the form of a Jira ticket. Provide how a tester or end user provides the information.
+
+## Prompt 23 — Define the Senior Software Engineer bug process
+
+> Now think not as an agent; think as a Senior Software Engineer. We have a new bug now. What is the process you are going to follow?
+
+## Prompt 24 — Fix the bug end to end with organizational evidence
+
+> Provide end-to-end fixing as a Senior Software Engineer role, with each stage and an evidence file. My organization wants proof of code changes, AI thinking, and my thinking in a new folder called `bugswillsmile`.
+
+## Prompt 25 — Confirm completion
+
+> Is it done?
+
+## Prompt 26 — Update this history through completion
+
+> In `myworkdayreuse.md`, update Prompt 16 through “is done?” and make sure all prompts are covered.
+
 ## Reuse instruction
 
 To reuse this history in another conversation, attach or reference this file and say:
@@ -104,3 +150,4 @@ Help me deliver the current ticket with actual validation evidence.
 
 Related operating prompt: [projectautomotion.md](projectautomotion.md)
 
+Completed SQL-injection fix evidence: [bugswillsmile](bugswillsmile/README.md)
